@@ -15,7 +15,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0' # Set your desired stable version here
+          flutter-version: '3.32.2' # Set your desired stable version here
           architecture: x64         # Avoid arm64 issue
 
       - name: Install dependencies
