@@ -15,25 +15,22 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.2' # Set your desired stable version here
-          architecture: x64         # Avoid arm64 issue
+          flutter-version: '3.29.2'
+          architecture: x64
+
+      - name: Clean build artifacts
+        run: flutter clean
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Clean build artifacts
-        run: flutter clean
-        
-      - name: Pre-cache iOS build
+      - name: Pre-cache iOS artifacts
         run: flutter precache --ios
 
-      - name: Generate iOS Flutter files
-        run: flutter build ios --no-codesign --simulator
+      - name: Generate iOS build files (Flutter side)
+        run: flutter build ios --release --no-codesign
 
       - name: Install CocoaPods dependencies
         run: |
           cd ios
           pod install --repo-update
-
-      - name: Build iOS
-        run: flutter build ios --release --no-codesign
