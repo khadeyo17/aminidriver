@@ -31,8 +31,9 @@ jobs:
         run: |
           cd ios
           pod install --repo-update
-
-      - name: Generate iOS build files (Flutter side)
+          
+      - name: Build iOS app for device
         run: flutter build ios --release --no-codesign
+
 
 
