@@ -1,1 +1,26 @@
+name: Build Flutter iOS App
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  build_ios:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build iOS
+      run: flutter build ios --no-codesign
 
