@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Pre-cache iOS artifacts
-        run: flutter precache --ios
+      - name: Pre-cache iOS simulator build
+        run: flutter precache --ios --universal
 
       - name: Install CocoaPods dependencies
         run: |
@@ -33,7 +33,7 @@ jobs:
           pod install --repo-update
 
           
-      - name: Build iOS app for device
+      - name: Build iOS for simulator
         run: flutter build ios --simulator
 
 
