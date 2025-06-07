@@ -20,7 +20,16 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Clean build artifacts
+        run: flutter clean
         
+      - name: Pre-cache iOS build
+        run: flutter precache --ios
+      - name: Create iOS Podfile and install pods
+        run: |
+          cd ios
+          pod install --repo-update
       - name: Install CocoaPods dependencies
         run: |
           cd ios
