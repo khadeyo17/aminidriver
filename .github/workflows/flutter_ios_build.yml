@@ -30,10 +30,12 @@ jobs:
       - name: Install CocoaPods dependencies
         run: |
           cd ios
-          pod install --repo-update
+          pod install --repo-updates
+
           
       - name: Build iOS app for device
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --simulator
+        #run: flutter build ios --release --no-codesign
 
 
 
