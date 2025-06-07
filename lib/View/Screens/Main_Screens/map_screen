@@ -1,0 +1,79 @@
+class MapScreen extends StatelessWidget {
+  final double latitude;
+  final double longitude;
+
+  const MapScreen({
+    Key? key,
+    required this.latitude,
+    required this.longitude,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Driver Location')),
+      body: FlutterMap(
+        options: MapOptions(
+          center: LatLng(latitude, longitude),
+          zoom: 13.0,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: ['a', 'b', 'c'],
+          ),
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: LatLng(latitude, longitude),
+                builder: (ctx) => const Icon(Icons.location_on, color: Colors.red, size: 40),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+//   const MapScreen({super.key});
+
+//   @override
+//   State<MapScreen> createState() => _MapScreenState();
+// }
+
+// class _MapScreenState extends State<MapScreen> {
+//   final LatLng _initialPosition = LatLng(-1.286389, 36.817223); // Nairobi
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text("Map")),
+//       body: FlutterMap(
+//         options: MapOptions(
+//           center: _initialPosition,
+//           zoom: 14.0,
+//         ),
+//         children: [
+//           TileLayer(
+//             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", // OpenStreetMap URL
+//             subdomains: ['a', 'b', 'c'],
+//           ),
+//           MarkerLayer(
+//             markers: [
+//               Marker(
+//                 point: _initialPosition,
+//                 builder: (context) => Icon(
+//                   Icons.location_pin,
+//                   color: Colors.red,
+//                   size: 40,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

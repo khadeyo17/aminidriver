@@ -1,0 +1,170 @@
+{
+  "project_info": {
+    "project_number": "484475965484",
+    "project_id": "vicsacs-1bfc1",
+    "storage_bucket": "vicsacs-1bfc1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484475965484:android:fb9895edb2c65839fb4189",
+        "android_client_info": {
+          "package_name": "com.example.aminidriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484475965484-s8grhq6cjnf8idalgq62jq6jqnf9de3k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aminidriver",
+            "certificate_hash": "f8c4bd92213b1fc06772e6d0d3ec4c63e7243031"
+          }
+        },
+        {
+          "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClhaXX1OOVCJLGjLyieDk-mtJvu-4Vp5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "484475965484-vgaqo4dk7t862i8kkfcba8p9dnnqjgmg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.hyderali.trippouser"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484475965484:android:9a9a858893a29b52fb4189",
+        "android_client_info": {
+          "package_name": "com.example.vicsacs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClhaXX1OOVCJLGjLyieDk-mtJvu-4Vp5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "484475965484-vgaqo4dk7t862i8kkfcba8p9dnnqjgmg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.hyderali.trippouser"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484475965484:android:8ca4cfb142c6645cfb4189",
+        "android_client_info": {
+          "package_name": "dev.hyderali.trippo_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClhaXX1OOVCJLGjLyieDk-mtJvu-4Vp5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "484475965484-vgaqo4dk7t862i8kkfcba8p9dnnqjgmg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.hyderali.trippouser"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484475965484:android:4768a482adc765eefb4189",
+        "android_client_info": {
+          "package_name": "vicsacs.darkaez.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484475965484-0q8kl3sre0cpdj0civ0tc18a2uv99rhn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "vicsacs.darkaez.com",
+            "certificate_hash": "966dbebdf576bca666503aad1ee013e78a58743d"
+          }
+        },
+        {
+          "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClhaXX1OOVCJLGjLyieDk-mtJvu-4Vp5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484475965484-m005qk10vefe7s1f8kkd12m20asl708p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "484475965484-vgaqo4dk7t862i8kkfcba8p9dnnqjgmg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.hyderali.trippouser"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
