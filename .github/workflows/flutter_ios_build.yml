@@ -27,10 +27,12 @@ jobs:
       - name: Pre-cache iOS artifacts
         run: flutter precache --ios
 
-      - name: Generate iOS build files (Flutter side)
-        run: flutter build ios --release --no-codesign
-
       - name: Install CocoaPods dependencies
         run: |
           cd ios
           pod install --repo-update
+
+      - name: Generate iOS build files (Flutter side)
+        run: flutter build ios --release --no-codesign
+
+
