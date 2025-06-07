@@ -21,6 +21,7 @@ jobs:
       - name: Clean build artifacts
         run: flutter clean
 
+
       - name: Install dependencies
         run: flutter pub get
 
