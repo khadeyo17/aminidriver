@@ -26,14 +26,11 @@ jobs:
         
       - name: Pre-cache iOS build
         run: flutter precache --ios
-      - name: Create iOS Podfile and install pods
-        run: |
-          cd ios
-          pod install --repo-update
+
       - name: Install CocoaPods dependencies
         run: |
           cd ios
-          pod install
+          pod install --repo-update
 
       - name: Build iOS
         run: flutter build ios --release --no-codesign
