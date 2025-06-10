@@ -37,7 +37,7 @@ dependencies:
   firebase_core: ^3.14.0
   geoflutterfire2:
     git:
-      url: https://github.com/khadeyo17/geoflutterfire2.git
+      url: https://github.com/DarshanGowda0/geoflutterfire.git
   cloud_firestore: ^5.6.9
   firebase_auth: ^5.6.0
   
