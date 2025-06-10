@@ -27,7 +27,8 @@ jobs:
 
       - name: Pre-cache iOS simulator build
         run: flutter precache --ios --universal
-
+      - name: Install specific CocoaPods version (optional)
+        run: sudo gem install cocoapods -v 1.16.0
       - name: Install CocoaPods dependencies
         run: |
           cd ios
