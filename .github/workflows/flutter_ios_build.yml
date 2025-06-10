@@ -27,6 +27,24 @@ jobs:
 
       - name: Pre-cache iOS simulator build
         run: flutter precache --ios --universal
+      - name: Clean and prepare build
+        run: |
+              flutter clean
+              flutter pub get
+              flutter precache --ios --universal
+
+      - name: Generate iOS build files (required before pods)
+        run: flutter build ios --simulator --no-codesign
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+           pod deintegrate
+          pod install --repo-update
+
+      - name: Final iOS Simulator Build
+        run: flutter build ios --simulator --no-codesign
+
         
       - name: Clean and generate iOS build files
         run: |
