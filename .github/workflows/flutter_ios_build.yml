@@ -28,8 +28,12 @@ jobs:
       - name: Pre-cache iOS simulator build
         run: flutter precache --ios --universal
         
-      - name: Generate iOS project files
-        run: flutter build ios --simulator --no-codesign
+      - name: Clean and generate iOS build files
+        run: |
+         flutter clean
+         flutter pub get
+         flutter precache --ios --universal
+         flutter build ios --simulator --no-codesign
         
       - name: Install specific CocoaPods version (optional)
         run: sudo gem install cocoapods -v 1.16.0
