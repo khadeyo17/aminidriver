@@ -35,6 +35,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
 
   firebase_core: ^3.14.0
+  geoflutterfire2:
+    git:
+      url: https://github.com/your-username/geoflutterfire2.git
   cloud_firestore: ^5.6.9
   firebase_auth: ^5.6.0
   
@@ -50,7 +53,7 @@ dependencies:
   dio: ^5.3.2
   geocoder2: ^1.4.0
   flutter_polyline_points: ^1.0.0
-  geoflutterfire2: ^2.3.15
+  #geoflutterfire2: ^2.3.15
   lottie: ^2.6.0
   firebase_messaging: ^14.6.7
   #flutter_local_notifications: ^15.1.1
