@@ -78,6 +78,17 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   #msal_flutter: ^2.0.1
   flutter_signin_button: ^2.0.0
+  url_launcher: ^6.3.1
+  sms_autofill: ^2.3.0
+  shared_preferences: ^2.2.2
+  pdfx: ^2.3.0 
+  firebase_storage: ^11.5.2
+  firebase_database: ^10.4.0
+  pdf: ^3.10.7
+  #printing: ^5.11.0
+  fl_chart: ^0.65.0
+  audioplayers: ^6.0.1
+
 
 dependency_overrides:
   firebase_auth_platform_interface: ^7.0.4
@@ -94,6 +105,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_native_splash: ^2.3.10
   flutter_launcher_icons: ^0.13.1
+ 
 
 flutter_launcher_icons:
   android: true
@@ -110,6 +122,7 @@ flutter:
     - assets/animations/login.json
     - assets/animations/register.json
     - assets/images/logo.png
+  #- assets/loading.json
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

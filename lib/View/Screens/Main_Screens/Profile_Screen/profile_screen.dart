@@ -1,43 +1,16 @@
-// import 'package:flutter/material.dart';
+// Add this import
+import 'dart:convert';
 
-// class ProfileScreen extends StatefulWidget {
-//   const ProfileScreen({super.key});
-
-//   @override
-//   State<ProfileScreen> createState() => _ProfileScreenState();
-// }
-
-// class _ProfileScreenState extends State<ProfileScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//       Size size = MediaQuery.sizeOf(context);
-//     return Scaffold(
-//       body: SafeArea(
-//         child: SizedBox(
-//          width:size.width,
-//          height:size.height,
-//           child:const Column(
-//             children: [],
-//         ),
-//        )
-//       ),
-//     );
-//   }
-// }
-
+import 'package:aminidriver/Container/utils/api_constant.dart';
+import 'package:aminidriver/Container/utils/keys.dart';
 import 'package:aminidriver/Onboarding/assign_driver.dart';
 import 'package:aminidriver/View/Routes/routes.dart';
-import 'package:aminidriver/View/Screens/Auth_Screens/Register_Screen/register_screen.dart';
 import 'package:aminidriver/View/Screens/Main_Screens/Profile_Screen/driverdetailssubmission.dart';
 import 'package:aminidriver/View/Screens/Other_Screens/driver_vehicle_screen.dart';
-//import 'package:aminidriver/View/Screens/Other_Screens/driver_vehicle_screen.dart';
-//import 'package:aminidriver/View/Screens/Other_Screens/driver_vehicle_screen';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:aminidriver/Container/utils/api_constant.dart';
+import 'package:http/http.dart' as http; // Create if not already
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -52,52 +25,187 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditing = false;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  List<VehicleModel> vehicles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserProfile();
+  }
 
   Future<void> fetchUserProfile() async {
     try {
       final user = _auth.currentUser;
       if (user == null) throw Exception("User not logged in");
 
-      final String userEmail = user.email!;
-      final String firebaseUid = user.uid;
+      final idToken = await user.getIdToken();
+      //email = user.email ?? "";
 
-      setState(() => email = userEmail);
-
-      final response = await http.get(
-        Uri.parse('$baseUrl/driver-vehicles/driverprofile/$firebaseUid'),
-        headers: {"Content-Type": "application/json"},
+      final profileRes = await http.get(
+        Uri.parse('$baseUrl/auth/profile'),
+        headers: {
+          "Authorization": "Bearer $idToken",
+          "Content-Type": "application/json",
+        },
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      if (profileRes.statusCode == 200) {
+        final data = json.decode(profileRes.body);
+
         _nameController.text = data['fullname'] ?? "";
         _phoneController.text = data['phone'] ?? "";
+        _emailController.text = data['email'] ?? "";
       } else {
-        throw Exception("Failed to load profile");
+        throw Exception("Failed to load profile: ${profileRes.body}");
       }
+
+      // Fetch both owned and driven vehicles
+      //await fetchVehicles();
     } catch (e) {
-      print("Error: $e");
+      print("Error fetching profile: $e");
     } finally {
-      setState(() => isLoading = false);
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 
+  // Future<void> fetchUserProfile() async {
+  //   try {
+  //     final user = _auth.currentUser;
+  //     if (user == null) throw Exception("User not logged in");
+
+  //     final String firebaseUid = user.uid;
+  //     email = user.email ?? "";
+
+  //     final profileRes = await http.get(
+  //       Uri.parse('$baseUrl/driver-vehicles/driverprofile/$firebaseUid'),
+  //       headers: {"Content-Type": "application/json"},
+  //     );
+
+  //     if (profileRes.statusCode == 200) {
+  //       final data = json.decode(profileRes.body);
+  //       _nameController.text = data['fullname'] ?? "";
+  //       _phoneController.text = data['phone'] ?? "";
+  //     } else {
+  //       throw Exception("Failed to load profile");
+  //     }
+
+  //     await fetchVehicles(firebaseUid);
+  //   } catch (e) {
+  //     print("Error fetching profile: $e");
+  //   } finally {
+  //     setState(() => isLoading = false);
+  //   }
+  // }
+
+  // Future<void> fetchVehicles(String uid) async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('$baseUrl/driver-vehicles/vehicles/$uid'),
+  //       headers: {"Content-Type": "application/json"},
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final List data = json.decode(response.body);
+  //       vehicles = data.map((json) => VehicleModel.fromJson(json)).toList();
+  //     } else {
+  //       throw Exception("Failed to fetch vehicles");
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching vehicles: $e");
+  //   }
+  // }
+  Future<void> fetchVehicles() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      final idToken = await user?.getIdToken();
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/vehicles/my-vehicles'),
+        headers: {
+          "Authorization": "Bearer $idToken",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        final List ownedData = data['ownedVehicles'] ?? [];
+        final List drivenData = data['drivenVehicles'] ?? [];
+
+        // Combine both lists or use them separately based on your logic
+        vehicles = [
+          ...ownedData.map((json) => VehicleModel.fromJson(json)),
+          ...drivenData.map((json) => VehicleModel.fromJson(json)),
+        ];
+      } else {
+        throw Exception("Failed to fetch vehicles: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching vehicles: $e");
+    }
+  }
+
+  // Future<void> updateUserProfile() async {
+  //   try {
+  //     final user = FirebaseAuth.instance.currentUser;
+  //     final idToken = await user?.getIdToken();
+
+  //     setState(() => isLoading = true);
+
+  //     final body = jsonEncode({
+  //       "email": _emailController,
+  //       "firebaseId": user!.uid,
+  //       // "phoneNumber": _phoneController.text.trim(),
+  //     });
+
+  //     final response = await http.put(
+  //       Uri.parse("$baseUrl/auth/update-profile"),
+  //       headers: {"Content-Type": "application/json"},
+  //       body: body,
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Profile updated successfully")),
+  //       );
+  //       setState(() => isEditing = false);
+  //     } else {
+  //       throw Exception("Update failed");
+  //     }
+  //   } catch (e) {
+  //     print("Update error: $e");
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(const SnackBar(content: Text("Error updating profile")));
+  //   } finally {
+  //     setState(() => isLoading = false);
+  //   }
+  // }
   Future<void> updateUserProfile() async {
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      final idToken = await user?.getIdToken();
+
       setState(() => isLoading = true);
 
       final body = jsonEncode({
-        "email": email,
-        "fullName": _nameController.text.trim(),
-        "phoneNumber": _phoneController.text.trim(),
+        "email": _emailController.text.trim(), // ✅ FIXED
+        "firebaseId": user!.uid,
       });
 
       final response = await http.put(
         Uri.parse("$baseUrl/auth/update-profile"),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Authorization": "Bearer $idToken", // ✅ Add token if needed
+          "Content-Type": "application/json",
+        },
         body: body,
       );
 
@@ -107,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
         setState(() => isEditing = false);
       } else {
-        throw Exception("Update failed");
+        throw Exception("Update failed: ${response.body}");
       }
     } catch (e) {
       print("Update error: $e");
@@ -119,26 +227,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  InputDecoration borderedDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-    );
-  }
-
   void logout() async {
     await _auth.signOut();
     if (mounted) {
-      context.goNamed(Routes().login);
-      //Navigator.of(context).rout(); // or redirect to login screen
+      context.goNamed(Routes().register);
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  // void goToVehicles() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => DriverVehiclesScreen(vehicles: vehicles),
+  //     ),
+  //   );
+  // }
+  void goToVehicles() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DriverVehiclesScreen()),
+    );
+  }
+
+  void onDriverAssigned() {
     fetchUserProfile();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Driver assigned successfully')),
+    );
   }
 
   @override
@@ -147,17 +262,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final Color textColor = isDark ? Colors.white : Colors.black;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Driver Profile"),
-        backgroundColor: Colors.blue, // changed from yellow to blue
-        foregroundColor: Colors.white, // white font for AppBar
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: Colors.black,
+        // title: const Text("Driver Profile"),
+        // // backgroundColor: Colors.blue,
+        // foregroundColor: Colors.grey[700],
         actions: [
           IconButton(
             icon: Icon(isEditing ? Icons.cancel : Icons.edit),
-            color: Colors.yellow, // yellow icon on blue AppBar
-            onPressed: () {
-              setState(() => isEditing = !isEditing);
-            },
+            color: Colors.yellow,
+            onPressed: () => setState(() => isEditing = !isEditing),
           ),
         ],
       ),
@@ -175,77 +294,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         'https://www.example.com/user-profile-image.jpg',
                       ),
                     ),
-                    const SizedBox(height: 20),
 
-                    // Email (non-editable)
-                    TextField(
-                      controller: TextEditingController(text: email),
-                      enabled: false,
-                      style: TextStyle(color: textColor),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _phoneController,
+                      enabled: false, // 🔒 Disable editing
+                      style: const TextStyle(color: Colors.grey), // Text color
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(color: textColor),
-                        border: const OutlineInputBorder(),
+                        labelText: "Phone (Username)",
+                        labelStyle: const TextStyle(color: Colors.grey),
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                        ),
+                        filled: true,
+                        fillColor:
+                            Colors.grey.shade100, // Light grey background
                       ),
                     ),
 
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameController,
-                      enabled: isEditing,
-                      decoration: borderedDecoration('Full Name'),
-                      //validator: (val) => val!.isEmpty ? 'Required' : null,
+                      enabled: false, // 🔒 Disable editing
+                      style: const TextStyle(color: Colors.grey), // Text color
+                      decoration: InputDecoration(
+                        labelText: "Name",
+                        labelStyle: const TextStyle(color: Colors.grey),
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                        ),
+                        filled: true,
+                        fillColor:
+                            Colors.grey.shade100, // Light grey background
+                      ),
                     ),
 
-                    // const SizedBox(height: 20),
-
-                    // // Name
-                    // TextField(
+                    // const SizedBox(height: 16),
+                    // TextFormField(
                     //   controller: _nameController,
                     //   enabled: isEditing,
-                    //   style: TextStyle(color: textColor),
-                    //   decoration: InputDecoration(
-                    //     labelText: 'Full Name',
-                    //     labelStyle: TextStyle(color: textColor),
-                    //     border: const OutlineInputBorder(),
-                    //   ),
+                    //   decoration: borderedDecoration('Full Name'),
                     // ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _phoneController,
+                      controller: _emailController,
                       enabled: isEditing,
-                      decoration: borderedDecoration('Phone Number'),
-                      //validator: (val) => val!.isEmpty ? 'Required' : null,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                    // const SizedBox(height: 20),
 
-                    // // Phone
-                    // TextFormField(
-                    //   controller: _phoneController,
-                    //   enabled: isEditing,
-                    //   keyboardType: TextInputType.phone,
-                    //   style: TextStyle(color: textColor),
-                    //   decoration: InputDecoration(
-                    //     labelText: 'Phone Number',
-                    //     labelStyle: TextStyle(color: textColor),
-                    //     border: const OutlineInputBorder(),
-                    //   ),
-                    // ),
                     const SizedBox(height: 30),
                     if (isEditing)
                       ElevatedButton.icon(
                         onPressed: updateUserProfile,
-                        icon: const Icon(
-                          Icons.save,
-                          color: Colors.black,
-                        ), // Icon font black
+                        icon: const Icon(Icons.save, color: Colors.white),
                         label: const Text(
                           "Save Profile",
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Colors.grey[700],
                           padding: const EdgeInsets.symmetric(
                             vertical: 14,
                             horizontal: 30,
@@ -256,134 +367,133 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
 
-                    const SizedBox(height: 20),
-
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => AssignDriverScreen(
-                                  onCompleted: () {
-                                    fetchUserProfile(); // Or any method you use to refresh the screen
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Driver assigned successfully',
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                    // const SizedBox(height: 20),
+                    // ElevatedButton.icon(
+                    //   onPressed: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder:
+                    //             (context) => AssignDriverScreen(
+                    //               onCompleted: onDriverAssigned,
+                    //             ),
+                    //       ),
+                    //     );
+                    //   },
+                    //   icon: const Icon(
+                    //     Icons.assignment_ind,
+                    //     color: Colors.white,
+                    //   ),
+                    //   label: const Text(
+                    //     "Assign Driver",
+                    //     style: TextStyle(color: Colors.white),
+                    //   ),
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Colors.grey[700],
+                    //     padding: const EdgeInsets.symmetric(
+                    //       vertical: 14,
+                    //       horizontal: 30,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
+                    // ElevatedButton.icon(
+                    //   onPressed: goToVehicles,
+                    //   icon: const Icon(
+                    //     Icons.directions_car,
+                    //     color: Colors.white,
+                    //   ),
+                    //   label: const Text(
+                    //     "My Vehicles",
+                    //     style: TextStyle(color: Colors.white),
+                    //   ),
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Colors.grey[700],
+                    //     padding: const EdgeInsets.symmetric(
+                    //       vertical: 14,
+                    //       horizontal: 30,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
+                    // ElevatedButton.icon(
+                    //   onPressed: logout,
+                    //   icon: const Icon(Icons.logout, color: Colors.white),
+                    //   label: const Text(
+                    //     "Logout",
+                    //     style: TextStyle(color: Colors.white),
+                    //   ),
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Colors.grey[700],
+                    //     padding: const EdgeInsets.symmetric(
+                    //       vertical: 14,
+                    //       horizontal: 30,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //   ),
+                    // ),
+                    if (!isEditing) ...[
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: goToVehicles,
+                        icon: const Icon(
+                          Icons.directions_car,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          "My Vehicles",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[700],
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 30,
                           ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.assignment_ind,
-                        color: Colors.black,
-                      ),
-                      label: const Text(
-                        "Assign Driver",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 30,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-
-                          // MaterialPageRoute(
-                          //   //onSubmit: (driverData) => handleDriverSubmit(driverData, context),
-                          //   builder:
-                          //       (context) => RegisterScreen(
-                          //         onSubmit:
-                          //             (driverData) => handleDriverSubmit(
-                          //               driverData,
-                          //               context,
-                          //             ),
-                          //       ),
-                          // ),
-                          MaterialPageRoute(
-                            builder:
-                                (context) => DriverVehiclesScreen(
-                                  // driverName: 'John Doe',
-                                  // vehicles: [
-                                  //   {
-                                  //     'model': 'Toyota Noah',
-                                  //     'regNumber': 'KDJ 123A',
-                                  //   },
-                                  //   {
-                                  //     'model': 'Mazda Bongo',
-                                  //     'regNumber': 'KBV 456B',
-                                  //   },
-                                  // ],
-                                ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.directions_car,
-                        color: Colors.black,
-                      ),
-                      label: const Text(
-                        "My Vehicles",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 30,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    ElevatedButton.icon(
-                      onPressed: logout,
-                      icon: const Icon(
-                        Icons.logout,
-                        color: Colors.black,
-                      ), // Icon font black
-                      label: const Text(
-                        "Logout",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 30,
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: logout,
+                        icon: const Icon(Icons.logout, color: Colors.white),
+                        label: const Text(
+                          "Logout",
+                          style: TextStyle(color: Colors.white),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[700],
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 30,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
+    );
+  }
+
+  InputDecoration borderedDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
     );
   }
 }

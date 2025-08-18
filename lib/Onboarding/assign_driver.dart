@@ -1,7 +1,18 @@
+import 'dart:convert';
+import 'package:aminidriver/Container/utils/api_constant.dart';
+import 'package:aminidriver/Container/utils/keys.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AssignDriverScreen extends StatefulWidget {
-  const AssignDriverScreen({super.key, required Null Function() onCompleted});
+  final VoidCallback? onCompleted;
+  final int vehicleId;
+
+  const AssignDriverScreen({
+    super.key,
+    this.onCompleted,
+    required this.vehicleId,
+  });
 
   @override
   State<AssignDriverScreen> createState() => _AssignDriverScreenState();
@@ -9,94 +20,147 @@ class AssignDriverScreen extends StatefulWidget {
 
 class _AssignDriverScreenState extends State<AssignDriverScreen> {
   String? selectedDriver;
-  String? selectedVehicle;
+  bool isLoading = false;
 
-  // Dummy data (replace with API calls)
-  final List<String> drivers = ['John Doe', 'Jane Smith', 'Alex Kim'];
-  final List<String> vehicles = ['KCN 123X', 'KDA 456B', 'KCY 789L'];
+  List<Map<String, dynamic>> drivers = [];
 
-  void assignDriver() {
-    if (selectedDriver != null && selectedVehicle != null) {
-      // Send assignment to backend
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$selectedDriver assigned to $selectedVehicle'),
-          backgroundColor: Colors.green,
-        ),
+  //final String baseUrl = "http://your-api-url.com"; // Replace with actual URL
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDrivers();
+  }
+
+  Future<void> fetchDrivers() async {
+    setState(() => isLoading = true);
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/vehicles/unassigned-drivers"),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select both driver and vehicle.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          drivers = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        showSnackBar("Failed to fetch drivers");
+      }
+    } catch (e) {
+      showSnackBar("Error: $e");
+    } finally {
+      setState(() => isLoading = false);
     }
+  }
+
+  Future<void> assignDriver() async {
+    if (selectedDriver == null) {
+      showSnackBar("Please select a driver.");
+      return;
+    }
+
+    setState(() => isLoading = true);
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/vehicles/assign-driver'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "vehicleId": widget.vehicleId,
+          "firebaseId": selectedDriver,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        showSnackBar("Driver assigned successfully", color: Colors.green);
+        // widget.onCompleted();
+        // Navigator.pop(context);
+      } else {
+        showSnackBar("Failed to assign driver");
+      }
+    } catch (e) {
+      showSnackBar("Error assigning driver: $e");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void showSnackBar(String message, {Color color = Colors.red}) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Assign Driver'),
-        backgroundColor: Colors.blue,
+        title: const Text("Assign Driver"),
+        centerTitle: true,
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        // title: const Text('Assign Driver'),
+        // backgroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Select Driver',
-                border: OutlineInputBorder(),
-              ),
-              value: selectedDriver,
-              items:
-                  drivers.map((driver) {
-                    return DropdownMenuItem(value: driver, child: Text(driver));
-                  }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedDriver = value;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Select Vehicle',
-                border: OutlineInputBorder(),
-              ),
-              value: selectedVehicle,
-              items:
-                  vehicles.map((vehicle) {
-                    return DropdownMenuItem(
-                      value: vehicle,
-                      child: Text(vehicle),
-                    );
-                  }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedVehicle = value;
-                });
-              },
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: assignDriver,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 15,
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Select Driver',
+                        border: OutlineInputBorder(),
+                      ),
+                      value: selectedDriver,
+                      items:
+                          drivers
+                              .map(
+                                (driver) => DropdownMenuItem<String>(
+                                  value: driver['firebaseId'].toString(),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(driver['fullName']),
+                                      Text(
+                                        driver['email'],
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedDriver = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity, // ✅ Stretch to full width
+                      child: ElevatedButton(
+                        onPressed: assignDriver,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[700],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 15,
+                          ),
+                        ),
+                        child: const Text('Assign Driver'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: const Text('Assign Driver'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

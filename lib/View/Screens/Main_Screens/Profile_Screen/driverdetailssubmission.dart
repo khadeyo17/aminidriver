@@ -69,3 +69,46 @@ void handleDriverSubmit(Map<String, dynamic> data, BuildContext context) async {
     ).showSnackBar(SnackBar(content: Text('Error: $e')));
   }
 }
+// lib/Model/vehicle_model.dart
+
+// class VehicleModel {
+//   final String model;
+//   final String regNumber;
+
+//   VehicleModel({required this.model, required this.regNumber});
+
+//   factory VehicleModel.fromJson(Map<String, dynamic> json) {
+//     return VehicleModel(
+//       model: json['model'] ?? 'Unknown',
+//       regNumber: json['regNumber'] ?? 'N/A',
+//     );
+//   }
+// }
+class VehicleModel {
+  final int id;
+  final String vehicleMake;
+  final String vehicleModel;
+  final String registrationNumber;
+  final int year;
+  final int? driverId;
+
+  VehicleModel({
+    required this.id,
+    required this.vehicleMake,
+    required this.vehicleModel,
+    required this.registrationNumber,
+    required this.year,
+    this.driverId,
+  });
+
+  factory VehicleModel.fromJson(Map<String, dynamic> json) {
+    return VehicleModel(
+      id: json['id'],
+      vehicleMake: json['vehicleMake'],
+      vehicleModel: json['vehicleModel'],
+      registrationNumber: json['registrationNumber'],
+      year: json['year'],
+      driverId: json['driverId'],
+    );
+  }
+}
