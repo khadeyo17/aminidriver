@@ -15,6 +15,8 @@ class Routes {
   final String vehicleonboarding = "VehicleOnboardingScreen";
   final String home = "home";
   final String ridealert = "RideAlertScreen";
+  final String rideInProgress = "LiveTrackingScreen";
+  final String assignedRide = "TripDetailScreen";
   //final String home = "home";
   //final String otp = "otp";
   final String profilesetupscreen = "profilesetupscreen";

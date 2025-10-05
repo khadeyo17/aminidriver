@@ -518,11 +518,11 @@ class _VehicleOnboardingScreenState extends State<VehicleOnboardingScreen> {
       setState(() {
         for (var docJson in data) {
           final doc = DocumentModel.fromJson(docJson);
-          _documents[doc.documentType] = {
-            'file': null, // or File(doc.filePath) if local
-            'status': doc.status.label, // ✅ Use label here
-            'url': doc.filePath,
-          };
+          // _documents[doc.documentType] = {
+          //   'file': null, // or File(doc.filePath) if local
+          //   'status': doc.status, // ✅ Use label here
+          //   'url': doc.filePath,
+          // };
         }
       });
     } else {

@@ -1,4 +1,3 @@
-import 'package:aminidriver/Container/utils/api_constant.dart';
 import 'package:aminidriver/Container/utils/keys.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,22 +7,54 @@ import 'dart:convert';
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
-  Future<List<RideHistory>> fetchRides() async {
+  Future<List<RideHistory>> fetchRides(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
     final token = await user?.getIdToken();
 
     final response = await http.get(
       Uri.parse("$baseUrl/rides/driver/history/${user!.uid}"),
-      headers: {'Authorization': 'Bearer $token'},
+      // headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => RideHistory.fromJson(json)).toList();
     } else {
-      throw Exception("Failed to load ride history");
+      final errorMessage = response.body;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to load rides: $errorMessage"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return []; // Return empty list on error
     }
   }
+
+  // Future<List<RideHistory>> fetchRides() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   final token = await user?.getIdToken();
+
+  //   final response = await http.get(
+  //     Uri.parse("$baseUrl/rides/driver/history/${user!.uid}"),
+  //     //headers: {'Authorization': 'Bearer $token'},
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final List<dynamic> data = jsonDecode(response.body);
+  //     return data.map((json) => RideHistory.fromJson(json)).toList();
+  //   } else {
+  //     if (mounted) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("Failed to load rides: $errorMessage"),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   }
+  //     //throw ({response.body});  // ${response.body} Exception("Failed to load ride history: ${response.body}");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +80,7 @@ class HistoryScreen extends StatelessWidget {
         //   style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
       ),
       body: FutureBuilder<List<RideHistory>>(
-        future: fetchRides(),
+        future: fetchRides(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

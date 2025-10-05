@@ -39,8 +39,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          walletBalance = data['walletBalance'] ?? 0.0;
-          weeklyEarnings = data['weeklyEarnings'] ?? 0.0;
+          // walletBalance = data['walletBalance'] ?? 0.0;
+          // weeklyEarnings = data['weeklyEarnings'] ?? 0.0;
+          walletBalance = (data['walletBalance']?.toDouble() ?? 0.0);
+          weeklyEarnings = (data['weeklyEarnings']?.toDouble() ?? 0.0);
+
           payouts = List<Map<String, dynamic>>.from(data['payouts'] ?? []);
         });
       } else {

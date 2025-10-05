@@ -5,6 +5,7 @@ import 'package:aminidriver/Container/utils/api_constant.dart';
 import 'package:aminidriver/Container/utils/keys.dart';
 import 'package:aminidriver/Onboarding/assign_driver.dart';
 import 'package:aminidriver/View/Routes/routes.dart';
+import 'package:aminidriver/View/Screens/Main_Screens/Payment_Screen/payment_screen.dart';
 import 'package:aminidriver/View/Screens/Main_Screens/Profile_Screen/driverdetailssubmission.dart';
 import 'package:aminidriver/View/Screens/Other_Screens/driver_vehicle_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,11 +31,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _emailController = TextEditingController();
 
   List<VehicleModel> vehicles = [];
-
+  List<String> paymentModes = [];
+  String? selectedPaymentMode;
+  int? selectedPaymentModeId;
   @override
   void initState() {
     super.initState();
     fetchUserProfile();
+    fetchPaymentModes();
+  }
+
+  // Future<void> fetchPaymentModes() async {
+  //   try {
+  //     final user = FirebaseAuth.instance.currentUser;
+  //     final idToken = await user?.getIdToken();
+
+  //     final response = await http.get(
+  //       Uri.parse('$baseUrl/payments/modes'), // Replace with your API endpoint
+  //       headers: {
+  //         //"Authorization": "Bearer $idToken",
+  //         "Content-Type": "application/json",
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       setState(() {
+  //         paymentModes = List<String>.from(data['paymentModes'] ?? []);
+  //         if (paymentModes.isNotEmpty) {
+  //           selectedPaymentMode = paymentModes[0];
+  //           selectedPaymentModeId = paymentModes['id'];
+  //           // default selection
+  //         }
+  //       });
+  //     } else {
+  //       print('Failed to fetch payment modes: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching payment modes: $e');
+  //   }
+  // }
+
+  List<Map<String, dynamic>> paymentModesData = [];
+
+  Future<void> fetchPaymentModes() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      final idToken = await user?.getIdToken();
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/payments/modes'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Parse as list of maps
+        paymentModesData = List<Map<String, dynamic>>.from(
+          data['paymentModes'] ?? [],
+        );
+
+        setState(() {
+          if (paymentModesData.isNotEmpty) {
+            selectedPaymentMode = paymentModesData[0]['name'];
+            selectedPaymentModeId = paymentModesData[0]['id'];
+          }
+        });
+      } else {
+        print('Failed to fetch payment modes: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching payment modes: $e');
+    }
   }
 
   Future<void> fetchUserProfile() async {
@@ -59,6 +128,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _nameController.text = data['fullname'] ?? "";
         _phoneController.text = data['phone'] ?? "";
         _emailController.text = data['email'] ?? "";
+        // selectedPaymentModeId = data['paymentModeId'];
+
+        selectedPaymentModeId =
+            (data['paymentModeId'] != null)
+                ? data['paymentModeId']
+                : (paymentModesData.isNotEmpty
+                    ? paymentModesData[0]['id']
+                    : null);
+        // selectedPaymentModeId =
+        //     data['paymentModeId'] ?? paymentModesData.isNotEmpty
+        //         ? paymentModesData[0]['id']
+        //         : null;
       } else {
         throw Exception("Failed to load profile: ${profileRes.body}");
       }
@@ -196,14 +277,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => isLoading = true);
 
       final body = jsonEncode({
-        "email": _emailController.text.trim(), // ✅ FIXED
+        "email": _emailController.text.trim(),
         "firebaseId": user!.uid,
+        "paymentMode": selectedPaymentModeId,
       });
 
-      final response = await http.put(
+      final response = await http.post(
         Uri.parse("$baseUrl/auth/update-profile"),
         headers: {
-          "Authorization": "Bearer $idToken", // ✅ Add token if needed
+          // "Authorization": "Bearer $idToken", // ✅ Add token if needed
           "Content-Type": "application/json",
         },
         body: body,
@@ -245,7 +327,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void goToVehicles() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const DriverVehiclesScreen()),
+      MaterialPageRoute(builder: (context) => const PaymentScreen()),
     );
   }
 
@@ -346,6 +428,92 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
 
+                    // const SizedBox(height: 16),
+                    // DropdownButtonFormField<String>(
+                    //   value: selectedPaymentMode,
+                    //   items:
+                    //       paymentModes.map((mode) {
+                    //         return DropdownMenuItem<String>(
+                    //           value: mode,
+                    //           child: Text(mode),
+                    //         );
+                    //       }).toList(),
+                    //   onChanged:
+                    //       isEditing
+                    //           ? (value) {
+                    //             setState(() => selectedPaymentMode = value);
+                    //           }
+                    //           : null,
+                    //   decoration: InputDecoration(
+                    //     labelText: "Preferred Payment Mode",
+                    //     border: OutlineInputBorder(),
+                    //   ),
+                    // ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<int>(
+                      value: selectedPaymentModeId,
+                      items:
+                          paymentModesData.map((mode) {
+                            return DropdownMenuItem<int>(
+                              value: mode['id'],
+                              child: Text(mode['name']),
+                            );
+                          }).toList(),
+                      onChanged:
+                          isEditing
+                              ? (value) =>
+                                  setState(() => selectedPaymentModeId = value)
+                              : null,
+                      decoration: InputDecoration(
+                        labelText: "Preferred Payment Mode",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            8,
+                          ), // rounded corners
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400, // border color
+                            width: 1,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey, // color when focused
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor:
+                            Colors.grey.shade100, // light grey background
+                      ),
+                    ),
+
+                    // const SizedBox(height: 16),
+                    // DropdownButtonFormField<int>(
+                    //   value: selectedPaymentModeId,
+                    //   items:
+                    //       paymentModesData.map((mode) {
+                    //         return DropdownMenuItem<int>(
+                    //           value: mode['id'],
+                    //           child: Text(mode['name']),
+                    //         );
+                    //       }).toList(),
+                    //   onChanged:
+                    //       isEditing
+                    //           ? (value) =>
+                    //               setState(() => selectedPaymentModeId = value)
+                    //           : null,
+                    //   decoration: InputDecoration(
+                    //     labelText: "Preferred Payment Mode",
+                    //   ),
+                    // ),
                     const SizedBox(height: 30),
                     if (isEditing)
                       ElevatedButton.icon(
@@ -449,7 +617,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Colors.white,
                         ),
                         label: const Text(
-                          "My Vehicles",
+                          "Wallet",
                           style: TextStyle(color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(

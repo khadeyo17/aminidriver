@@ -19,7 +19,7 @@ xmlns:tools="http://schemas.android.com/tools">
 
 
     <application
-    android:label="aminidriver"
+    android:label="amini driver"
     android:icon="@mipmap/ic_launcher">
 
     <uses-library 
@@ -27,14 +27,8 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyCj89S5821WHuOjfnh7JUS2DzeFaYVUQU0"/>
-         android:name="${com.example.aminidriver}"
-        android:name="com.google.android.geo.API_KEY"
-        android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
-        android:name="com.google.firebase.messaging.default_notification_channel_id"
-        android:value="high_importance_channel" />
+        android:value="AIzaSyD61jK-WW8bd6rwwXjBo3RYjh3LGTbyD44"/> 
 
-        
         <activity
             android:name=".MainActivity"
             android:exported="true"

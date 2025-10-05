@@ -10,6 +10,7 @@ import 'package:aminidriver/View/Routes/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -171,7 +172,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DriverOnboardingScreen(role: UserRole.driver),
+              builder:
+                  (_) => DriverOnboardingScreen(
+                    role: UserRole.driver,
+                    // category: selectedCategory!,
+                  ),
             ),
           );
           break;
@@ -180,7 +185,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DriverOnboardingScreen(role: UserRole.owner),
+              builder:
+                  (_) => DriverOnboardingScreen(
+                    role: UserRole.owner,
+                    //category: selectedCategory!,
+                  ),
             ),
           );
           break;
@@ -190,12 +199,15 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             context,
             MaterialPageRoute(
               builder:
-                  (_) => DriverOnboardingScreen(role: UserRole.driverOwner),
+                  (_) => DriverOnboardingScreen(
+                    role: UserRole.driverOwner,
+                    // category: selectedCategory!,
+                  ),
             ),
           );
           break;
 
-        case UserRole.passenger:
+        case UserRole.admin:
         default:
           context.goNamed(Routes().navigationScreen);
           break;
@@ -355,7 +367,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey[700],
-                    //foregroundColor: Colors.white ,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     textStyle: const TextStyle(
                       fontSize: 18,
@@ -363,7 +375,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     ),
                   ),
                   onPressed: saveProfileAndContinue,
-                  child: const Text("Continue"),
+                  child: const Text("Next"),
                 ),
               ),
             ],

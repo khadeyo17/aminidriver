@@ -41,51 +41,52 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyClhaXX1OOVCJLGjLyieDk-mtJvu-4Vp5g',
-    appId: '1:484475965484:android:fb9895edb2c65839fb4189',
-    messagingSenderId: '484475965484',
-    projectId: 'vicsacs-1bfc1',
-    storageBucket: 'vicsacs-1bfc1.firebasestorage.app',
+    apiKey: 'AIzaSyA20N87RW4rt9liaBMZxCwBhhq1VRcSfo4',
+    appId: '1:1036998176974:android:9accdf1acf7ea85445a09f',
+    messagingSenderId: '1036998176974',
+    projectId: 'amini-9c3c0',
+    databaseURL: 'https://amini-9c3c0-default-rtdb.firebaseio.com',
+    storageBucket: 'amini-9c3c0.firebasestorage.app',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAJQDUOzqmSZ1bPa5Ln9oti8r5N6a65DVA',
-    appId: '1:484475965484:web:2c0f4e4110829677fb4189',
-    messagingSenderId: '484475965484',
-    projectId: 'vicsacs-1bfc1',
-    authDomain: 'vicsacs-1bfc1.firebaseapp.com',
-    storageBucket: 'vicsacs-1bfc1.firebasestorage.app',
+    apiKey: 'AIzaSyAWzrRuS7zgiuNvu7TjDrmGhwSUR_Aac3g',
+    appId: '1:1036998176974:web:6852d069dd1424f445a09f',
+    messagingSenderId: '1036998176974',
+    projectId: 'amini-9c3c0',
+    authDomain: 'amini-9c3c0.firebaseapp.com',
+    databaseURL: 'https://amini-9c3c0-default-rtdb.firebaseio.com',
+    storageBucket: 'amini-9c3c0.firebasestorage.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDQ3_CL7XgBcSgsLCfrxnYuEJnvQvqr_x4',
-    appId: '1:484475965484:ios:d952e4d5f44bfb1afb4189',
-    messagingSenderId: '484475965484',
-    projectId: 'vicsacs-1bfc1',
-    storageBucket: 'vicsacs-1bfc1.firebasestorage.app',
-    androidClientId: '484475965484-0q8kl3sre0cpdj0civ0tc18a2uv99rhn.apps.googleusercontent.com',
-    iosClientId: '484475965484-s2kran8ap2mi70k1j3t9sflm01ff0241.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBOJvIXzy5eQ0dc3g5i45e6BLyd_acA7Vk',
+    appId: '1:1036998176974:ios:724fed088581fbe145a09f',
+    messagingSenderId: '1036998176974',
+    projectId: 'amini-9c3c0',
+    databaseURL: 'https://amini-9c3c0-default-rtdb.firebaseio.com',
+    storageBucket: 'amini-9c3c0.firebasestorage.app',
     iosBundleId: 'com.example.aminidriver',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDQ3_CL7XgBcSgsLCfrxnYuEJnvQvqr_x4',
-    appId: '1:484475965484:ios:d952e4d5f44bfb1afb4189',
-    messagingSenderId: '484475965484',
-    projectId: 'vicsacs-1bfc1',
-    storageBucket: 'vicsacs-1bfc1.firebasestorage.app',
-    androidClientId: '484475965484-0q8kl3sre0cpdj0civ0tc18a2uv99rhn.apps.googleusercontent.com',
-    iosClientId: '484475965484-s2kran8ap2mi70k1j3t9sflm01ff0241.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBOJvIXzy5eQ0dc3g5i45e6BLyd_acA7Vk',
+    appId: '1:1036998176974:ios:724fed088581fbe145a09f',
+    messagingSenderId: '1036998176974',
+    projectId: 'amini-9c3c0',
+    databaseURL: 'https://amini-9c3c0-default-rtdb.firebaseio.com',
+    storageBucket: 'amini-9c3c0.firebasestorage.app',
     iosBundleId: 'com.example.aminidriver',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAJQDUOzqmSZ1bPa5Ln9oti8r5N6a65DVA',
-    appId: '1:484475965484:web:2b392a994c3ed3c5fb4189',
-    messagingSenderId: '484475965484',
-    projectId: 'vicsacs-1bfc1',
-    authDomain: 'vicsacs-1bfc1.firebaseapp.com',
-    storageBucket: 'vicsacs-1bfc1.firebasestorage.app',
+    apiKey: 'AIzaSyAWzrRuS7zgiuNvu7TjDrmGhwSUR_Aac3g',
+    appId: '1:1036998176974:web:bd9a1a1f22a88ff245a09f',
+    messagingSenderId: '1036998176974',
+    projectId: 'amini-9c3c0',
+    authDomain: 'amini-9c3c0.firebaseapp.com',
+    databaseURL: 'https://amini-9c3c0-default-rtdb.firebaseio.com',
+    storageBucket: 'amini-9c3c0.firebasestorage.app',
   );
 
 }

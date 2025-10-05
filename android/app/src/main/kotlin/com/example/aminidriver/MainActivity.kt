@@ -1,4 +1,4 @@
-package com.example.aminidriver
+package com.example.amini_rider
 
 import io.flutter.embedding.android.FlutterActivity
 

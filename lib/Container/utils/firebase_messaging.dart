@@ -82,6 +82,7 @@ class MessagingService {
     final data = message.data;
 
     final rideId = data['rideId'];
+    final rideRequestId = data['rideRequestId'];
     final rider = data['rider'];
     final pickup =
         data['pickupName'] ?? message.notification?.title ?? 'New Ride';
@@ -103,6 +104,7 @@ class MessagingService {
       // 🔹 Save pending ride for 5 minutes
       await savePendingRide({
         'rideId': rideId,
+        'rideRequestId': rideRequestId,
         'rider': rider,
         'pickupName': pickup,
         'destinationName': drop,
@@ -122,6 +124,7 @@ class MessagingService {
                 (_, __, ___) => RideAlertScreen(
                   rideId: rideId,
                   rider: rider,
+                  rideRequestId: rideRequestId,
                   pickupName: pickup,
                   destinationName: drop,
                   pickupLat: pickupLat,

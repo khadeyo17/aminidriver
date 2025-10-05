@@ -3,6 +3,7 @@ import 'package:aminidriver/Container/utils/api_constant.dart';
 import 'package:aminidriver/Container/utils/keys.dart';
 import 'package:aminidriver/Onboarding/driveronboardingscreen.dart';
 import 'package:aminidriver/Onboarding/user_role.dart';
+import 'package:aminidriver/Onboarding/vehicle_category.dart';
 import 'package:aminidriver/View/Routes/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -70,7 +71,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen>
     try {
       // 1️⃣ Check Backend
       final response = await http.get(
-        Uri.parse('http://192.168.100.160:7047/api/auth/check-user/$uid'),
+        Uri.parse('$baseUrl/auth/check-user/$uid'),
         headers: {
           'Content-Type': 'application/json',
           //'Authorization': 'Bearer $token',

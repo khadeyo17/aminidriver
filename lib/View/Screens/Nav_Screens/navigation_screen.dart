@@ -1,8 +1,8 @@
+import 'package:aminidriver/View/Screens/Other_Screens/driver_vehicle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aminidriver/View/Screens/Main_Screens/Home_Screen/home_screen.dart';
 import 'package:aminidriver/View/Screens/Main_Screens/History_Screen/history_screen.dart';
-import 'package:aminidriver/View/Screens/Main_Screens/Payment_Screen/payment_screen.dart';
 import 'package:aminidriver/View/Screens/Main_Screens/Profile_Screen/profile_screen.dart';
 import 'package:aminidriver/View/Screens/Nav_Screens/navigation_providers.dart';
 
@@ -16,7 +16,8 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   List<Widget> screens = const [
     HomeScreen(),
-    PaymentScreen(),
+    DriverVehiclesScreen(),
+    //PaymentScreen(),
     HistoryScreen(),
     ProfileScreen(),
   ];
@@ -38,9 +39,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 label: "Home",
               ),
               NavigationDestination(
-                icon: Icon(Icons.wallet, color: Colors.grey[700]),
-                selectedIcon: Icon(Icons.wallet, color: Colors.black),
-                label: "Wallet",
+                icon: Icon(Icons.car_rental, color: Colors.grey[700]),
+                selectedIcon: Icon(Icons.car_rental, color: Colors.black),
+                label: "Vehicle",
               ),
               NavigationDestination(
                 icon: Icon(Icons.history, color: Colors.grey[700]),
@@ -61,34 +62,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             selectedIndex: ref.watch(navigationStateProvider),
           ),
-
-          // bottomNavigationBar: NavigationBar(
-          //   selectedIndex: currentIndex,
-          //   onDestinationSelected: (int index) {
-          //     ref.read(navigationStateProvider.notifier).state = index;
-          //   },
-          //   backgroundColor: Colors.white,
-          //   labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          //   destinations: const [
-          //     NavigationDestination(
-          //       icon: Icon(Icons.home_outlined, color: Colors.yellow),
-          //       label: "Home",
-          //       foreground: colours :colour.black
-          //     ),
-          //     NavigationDestination(
-          //       icon: Icon(Icons.wallet_outlined, color: Colors.yellow),
-          //       label: "Wallet",
-          //     ),
-          //     NavigationDestination(
-          //       icon: Icon(Icons.history, color: Colors.yellow),
-          //       label: "Rides",
-          //     ),
-          //     NavigationDestination(
-          //       icon: Icon(Icons.person_outline, color: Colors.yellow),
-          //       label: "Profile",
-          //     ),
-          //   ],
-          // ),
         );
       },
     );

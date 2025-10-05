@@ -1,10 +1,14 @@
 //import 'package:aminidriver/View/Screens/Auth_Screens/Register_Screen/register_screen.dart';
 //import 'package:aminidriver/View/Screens/Auth_Screens/Register_Screen/driver_registration_screen';
+import 'package:aminidriver/Onboarding/live_tracking_screen.dart';
 import 'package:aminidriver/Onboarding/ride_alert.dart';
+import 'package:aminidriver/Onboarding/ride_status_provider.dart';
 import 'package:aminidriver/Onboarding/role_screen.dart';
+import 'package:aminidriver/Onboarding/trip_detail_screen.dart';
 import 'package:aminidriver/Onboarding/vehicleonboardingscreen.dart';
 import 'package:aminidriver/View/Screens/Auth_Screens/Register_Screen/mobile_otp_verification_screen.dart';
 import 'package:aminidriver/View/Screens/Auth_Screens/Register_Screen/profile_setup_screen.dart';
+import 'package:aminidriver/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aminidriver/View/Routes/routes.dart';
@@ -13,12 +17,22 @@ import 'package:aminidriver/View/Screens/Auth_Screens/Register_Screen/register_s
 import 'package:aminidriver/View/Screens/Nav_Screens/navigation_screen.dart';
 import 'package:aminidriver/View/Screens/Other_Screens/Splash_Screen/splash_screen.dart';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'root',
-);
+double _parseDouble(dynamic value) {
+  if (value == null) return 0.0;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+// final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
+//   debugLabel: 'root',
+// );
+
+// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(
+//   debugLabel: 'root',
+// );
 
 final GoRouter router = GoRouter(
-  navigatorKey: _rootNavigatorKey,
+  navigatorKey: navigatorKey,
   initialLocation: '/${Routes().splash}',
   routes: allRoutes,
 );
@@ -50,6 +64,28 @@ final List<RouteBase> allRoutes = [
   //   },
   // ),
   GoRoute(
+    path: '/rideInProgress',
+    builder: (context, state) {
+      final rideId = state.extra as String;
+      return LiveTrackingScreen(rideId: rideId);
+    },
+  ),
+  GoRoute(
+    path: '/assignedRide',
+    builder: (context, state) {
+      final rideInfo = state.extra as RideInfo; // cast to RideInfo
+      return TripDetailScreen(
+        rideId: rideInfo.rideId,
+        pickupLat: rideInfo.pickup.latitude,
+        pickupLng: rideInfo.pickup.longitude,
+        destLat: rideInfo.destination.latitude,
+        destLng: rideInfo.destination.longitude,
+        rider: rideInfo.riderName,
+        mobile: rideInfo.mobile,
+      );
+    },
+  ),
+  GoRoute(
     name: 'otp',
     path: '/otp',
     pageBuilder: (context, state) {
@@ -76,6 +112,7 @@ final List<RouteBase> allRoutes = [
       );
     },
   ),
+
   // GoRoute(
   //   // name: 'ridealert',
   //   // path: '/ride-alert',
@@ -116,20 +153,44 @@ final List<RouteBase> allRoutes = [
     path: '/${Routes().ridealert}',
     builder: (context, state) {
       final data = (state.extra ?? {}) as Map<String, dynamic>;
-
       return RideAlertScreen(
         rideId: data['rideId'] ?? '',
+        rideRequestId: data['rideRequestId'] ?? '',
         rider: data['rider'] ?? '',
         pickupName: data['pickupName'] ?? '',
         destinationName: data['destinationName'] ?? '',
-        pickupLat: (data['pickupLat'] as num?)?.toDouble() ?? 0.0,
-        pickupLng: (data['pickupLng'] as num?)?.toDouble() ?? 0.0,
-        destLat: (data['destLat'] as num?)?.toDouble() ?? 0.0,
-        destLng: (data['destLng'] as num?)?.toDouble() ?? 0.0,
+
+        pickupLat: _parseDouble(data['pickupLat']),
+        pickupLng: _parseDouble(data['pickupLng']),
+        destLat: _parseDouble(data['destLat']),
+        destLng: _parseDouble(data['destLng']),
+        // pickupLat: (data['pickupLat'] as num?)?.toDouble() ?? 0.0,
+        // pickupLng: (data['pickupLng'] as num?)?.toDouble() ?? 0.0,
+        // destLat: (data['destLat'] as num?)?.toDouble() ?? 0.0,
+        // destLng: (data['destLng'] as num?)?.toDouble() ?? 0.0,
       );
     },
   ),
 
+  // GoRoute(
+  //   //navigatorKey: navigatorKey,
+  //   name: Routes().ridealert,
+  //   path: '/${Routes().ridealert}',
+  //   builder: (context, state) {
+  //     final data = (state.extra ?? {}) as Map<String, dynamic>;
+
+  //     return RideAlertScreen(
+  //       rideId: data['rideId'] ?? '',
+  //       rider: data['rider'] ?? '',
+  //       pickupName: data['pickupName'] ?? '',
+  //       destinationName: data['destinationName'] ?? '',
+  //       pickupLat: (data['pickupLat'] as num?)?.toDouble() ?? 0.0,
+  //       pickupLng: (data['pickupLng'] as num?)?.toDouble() ?? 0.0,
+  //       destLat: (data['destLat'] as num?)?.toDouble() ?? 0.0,
+  //       destLng: (data['destLng'] as num?)?.toDouble() ?? 0.0,
+  //     );
+  //   },
+  // ),
   GoRoute(
     path: '/register',
     name: 'register',
