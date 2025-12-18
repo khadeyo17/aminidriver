@@ -385,6 +385,8 @@ class _RideAlertScreenState extends State<RideAlertScreen> {
     }
   }
 
+
+
   Future<void> _rejectRide(BuildContext context, {bool auto = false}) async {
     _timer?.cancel();
     _stopRingtone();
@@ -397,10 +399,10 @@ class _RideAlertScreenState extends State<RideAlertScreen> {
     );
 
     if (!mounted) return;
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const NavigationScreen()),
-      (route) => false,
+      //(route) => false,
     );
 
     if (response.statusCode != 200) {
