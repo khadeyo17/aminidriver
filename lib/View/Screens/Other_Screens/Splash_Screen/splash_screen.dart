@@ -35,16 +35,16 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               // 👇 Replace with your actual logo if needed
               Image.asset('assets/images/logo.png', width: 120, height: 120),
-              const SizedBox(height: 20),
-              Text(
-                "Amini Driver",
-                style: TextStyle(
-                  fontSize: 48,
-                  fontFamily: "bold",
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              // const SizedBox(height: 20),
+              // Text(
+              //   "Amini Driver",
+              //   style: TextStyle(
+              //     fontSize: 48,
+              //     fontFamily: "bold",
+              //     color: Colors.white,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
             ],
           ),
         ),

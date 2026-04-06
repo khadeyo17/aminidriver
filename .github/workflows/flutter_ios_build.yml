@@ -9,63 +9,17 @@ jobs:
   build:
     name: Build for iOS
     runs-on: macos-latest
-    
 
     steps:
       - uses: actions/checkout@v3
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.2'
-          architecture: x64
-
-      - name: Clean build artifacts
-        run: flutter clean
+          flutter-version: '3.29.2' # Set your desired stable version here
+          architecture: x64         # Avoid arm64 issue
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Pre-cache iOS simulator build
-        run: flutter precache --ios --universal
-      - name: Clean and prepare build
-        run: |
-              flutter clean
-              flutter pub get
-              flutter precache --ios --universal
-
-      - name: Generate iOS build files (required before pods)
-        run: flutter build ios --simulator --no-codesign
-
-      - name: Install CocoaPods dependencies
-        run: |
-          cd ios
-           pod deintegrate
-          pod install --repo-update
-
-      - name: Final iOS Simulator Build
-        run: flutter build ios --simulator --no-codesign
-
-        
-      - name: Clean and generate iOS build files
-        run: |
-         flutter clean
-         flutter pub get
-         flutter precache --ios --universal
-         flutter build ios --simulator --no-codesign
-        
-      - name: Install specific CocoaPods version (optional)
-        run: sudo gem install cocoapods -v 1.16.0
-        
-      - name: Install CocoaPods dependencies
-        run: |
-          cd ios
-          pod deintegrate
-          pod install --repo-update
-
-          
-      - name: Build iOS for simulator
-        run: flutter build ios --simulator
-
-
-
-
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign

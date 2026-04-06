@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:aminidriver/Container/utils/keys.dart';
 import 'package:aminidriver/View/Screens/Main_Screens/Home_Screen/home_providers.dart';
 import '../../Model/direction_model.dart';
 import '../utils/error_notification.dart';
@@ -27,28 +26,35 @@ class AddressParser {
       }
 
       final url =
-          "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$mapKey";
+          "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json";
 
-      final res = await Dio().get(url);
+      final res = await Dio().get(
+        url,
+        options: Options(
+          headers: {
+            "User-Agent":
+                "aminidriver-app/1.0 (contact@example.com)", // required by OSM policy
+          },
+        ),
+      );
 
-      print('Geocoding API response: ${res.data}');
+      print('Nominatim API response: ${res.data}');
 
       if (res.statusCode == 200) {
-        final results = res.data["results"];
-        if (results != null && results.isNotEmpty) {
-          final formattedAddress = results[0]["formatted_address"];
+        final displayName = res.data["display_name"];
 
+        if (displayName != null) {
           final model = Direction(
             locationLatitude: userPosition.latitude,
             locationLongitude: userPosition.longitude,
-            humanReadableAddress: formattedAddress,
+            humanReadableAddress: displayName,
           );
 
           ref
               .read(homeScreenDriversLocationProvider.notifier)
               .setLocation(model);
 
-          return formattedAddress;
+          return displayName;
         } else {
           ErrorNotification().showError(context, "No address found.");
         }
@@ -62,6 +68,71 @@ class AddressParser {
     return null;
   }
 }
+
+// import 'package:dio/dio.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:aminidriver/Container/utils/keys.dart';
+// import 'package:aminidriver/View/Screens/Main_Screens/Home_Screen/home_providers.dart';
+// import '../../Model/direction_model.dart';
+// import '../utils/error_notification.dart';
+
+// final globalAddressParserProvider = Provider<AddressParser>((ref) {
+//   return AddressParser();
+// });
+
+// class AddressParser {
+//   Future<String?> humanReadableAddress(
+//     Position userPosition,
+//     context,
+//     WidgetRef ref,
+//   ) async {
+//     try {
+//       final lat = userPosition.latitude.toStringAsFixed(6);
+//       final lng = userPosition.longitude.toStringAsFixed(6);
+//       print('Latitude: $lat, Longitude: $lng');
+
+//       if (userPosition.latitude == 0.0 || userPosition.longitude == 0.0) {
+//         ErrorNotification().showError(context, "Invalid location coordinates.");
+//         return null;
+//       }
+
+//       final url =
+//           "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$mapKey";
+
+//       final res = await Dio().get(url);
+
+//       print('Geocoding API response: ${res.data}');
+
+//       if (res.statusCode == 200) {
+//         final results = res.data["results"];
+//         if (results != null && results.isNotEmpty) {
+//           final formattedAddress = results[0]["formatted_address"];
+
+//           final model = Direction(
+//             locationLatitude: userPosition.latitude,
+//             locationLongitude: userPosition.longitude,
+//             humanReadableAddress: formattedAddress,
+//           );
+
+//           ref
+//               .read(homeScreenDriversLocationProvider.notifier)
+//               .setLocation(model);
+
+//           return formattedAddress;
+//         } else {
+//           ErrorNotification().showError(context, "No address found.");
+//         }
+//       } else {
+//         ErrorNotification().showError(context, "Failed to get address.");
+//       }
+//     } catch (e) {
+//       ErrorNotification().showError(context, "An error occurred: $e");
+//     }
+
+//     return null;
+//   }
+// }
 
 // import 'package:dio/dio.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';

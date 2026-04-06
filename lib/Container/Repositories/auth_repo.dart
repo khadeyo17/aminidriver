@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:aminidriver/Container/utils/snackbar_utils.dart';
-import 'package:aminidriver/Onboarding/role_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,35 @@ final globalAuthRepoProvider = Provider<AuthRepo>((ref) => AuthRepo());
 
 class AuthRepo {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<String?> startPhoneVerification({
+    required String phone,
+    required String method,
+    required BuildContext context,
+  }) async {
+    final completer = Completer<String?>();
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phone,
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Verification failed: ${e.message}")),
+        );
+        completer.complete(null);
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("OTP code sent to $phone")));
+        completer.complete(verificationId); // ✅ return the actual ID
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+
+    return completer.future;
+  }
 
   Future<bool> registerWithEmailPhonePassword({
     //required String fullName,
@@ -31,10 +61,6 @@ class AuthRepo {
 
       final user = credential.user;
       if (user != null) {
-        // Set display name
-        // await user.updateDisplayName(fullName);
-
-        // Send email verification
         await user.sendEmailVerification();
 
         return true; // ✅ Don't forget this!
@@ -313,7 +339,7 @@ class AuthRepo {
       );
       final user = authResult.user;
       final idToken = await user?.getIdToken();
-      (context) => RoleSelectionScreen();
+      //(context) => RoleSelectionScreen();
       //context.goNamed(Routes().RoleConfig);
 
       // final response = await http.post(
